@@ -194,7 +194,6 @@ class TrainerBase:
         self.cur_loss = {}
         self.cur_loss_debug = {}
         self.enable_amp = self.train_config.get('amp', False)
-        # self.prepare()
 
     def create_dataset(self) -> None:
         if not self.config['dataset'].get('enable', True):
@@ -332,7 +331,7 @@ class TrainerBase:
             assert False
         
 
-    def prepare(self, mode='train') -> None:
+    def prepare(self, mode='train', with_output_dir=True) -> None:
         if self.config['dataset'].get('enable', True):
             self.create_dataset()
             self.create_loader()
@@ -369,7 +368,7 @@ class TrainerBase:
                 device_ids=[self.config['local_rank']],
                 output_device=self.config['local_rank'])
 
-        if self.model is not None and self.enable_log:
+        if self.model is not None and self.enable_log and with_output_dir:
             create_dir(self.log_path)
             create_dir(self.model_path)
             create_dir(self.writer_path)
@@ -611,7 +610,7 @@ class TrainerBase:
             epoch = res.groups()[1]
             step = res.groups()[2]
             load_path = path_template.format(epoch, step)
-            checkpoint = torch.load(load_path)
+            checkpoint = torch.load(load_path, weights_only=False)
             self.step = checkpoint['step']
             self.start_epoch = checkpoint['epoch'] + 1
             tmp_optimizer = checkpoint['optimizer']

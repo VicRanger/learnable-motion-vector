@@ -4,19 +4,15 @@ model:
         # "demodulate_after_warp",
         "demodulate_before_warp",
         "st",
-        # "sky_residual",
         "recurrent",
         "temporal_warped_feature",  # add temporal reuse of feature
-
         "smv0",  # add flow estimation to perform spacial warping
         "sep_smv_res",
         "history_smv0",
         "history_sep_smv_res",
-        
         "output_warp1", # warp last input history frame
-        "sky_warp1",
+        "output_warp2", # warp last input history frame
         "no_st_warp1",
-        "output_warp2", 
+        "sky_warp1",
         "st_warp2",
-        "separate_warp",
     ]

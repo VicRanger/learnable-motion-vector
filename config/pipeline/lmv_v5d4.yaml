@@ -1,7 +1,7 @@
 job_name: "shade_net_v5d4"
 base: "base.yaml"
 pipeline: [
-    "pipeline/shade_net_v5d4_loss.yaml",
+    "pipeline/lmv_v5d4_loss.yaml",
 ]
 include: []
 dataset: {
@@ -87,7 +87,7 @@ model: {
     },
     "loss": [
         "zero_flow",
-        "c1_flow",
+        # "c1_flow",
         # "zero_flow2",
     ],
     "debug": [
@@ -162,10 +162,10 @@ model: {
             "encoder": [[24], [32], [48], [48]]
         },
         "input_buffer": [
+            "world_normal",
+            "depth",
             "roughness",
             "metallic",
-            "world_normal",
-            "depth"
         ],
         "act_func": "prelu",
     },

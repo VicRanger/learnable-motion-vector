@@ -97,7 +97,7 @@ def check_value(metadata: MetaData):
     #             data[k], channel_num=3, mode="repeat"))
     if comp_sc_psnr < 35 or\
         comp_brdf_psnr < 35 or\
-        comp_hw_psnr < 15 or\
+        comp_hw_psnr < 20 or\
         illum_diff > 0.01:
         # data[f'aa_brdf_color'].min() < 0.01 - 1/65536:
         log.debug(dict_to_string(data, mmm=True))
@@ -127,7 +127,7 @@ def check_value(metadata: MetaData):
                 write_buffer("{}/{}_{}.exr".format(write_path, k, metadata.index),
                              align_channel_buffer(
                     data[k], channel_num=3, mode="repeat"))
-        exit(0)
+        # exit(0)
 
 
 if __name__ == '__main__':
@@ -172,7 +172,7 @@ if __name__ == '__main__':
         # end_index = start_index + 1
         end_index = len(glob.glob(f'{job_config["export_path"]}/{scene_name}/metadata/*'))
         log.debug(f'{start_index}, {end_index}')
-        write_path = "../output/images/check_value"
+        write_path = f"../output/images/check_value/{scene_name}"
         create_dir(write_path)
         remove_all_in_dir(write_path)
 

@@ -14,7 +14,7 @@ loss: {
     ],
     "train_loss": {
         "rec_loss": {"name": "rec_loss","args": ["pred", "scene_color"],  "mode": "l1", "scale": 1.0, "config": {"tonemap": gamma_log}},
-        "rec_residual_loss": {"args": ["pred_scene_light_no_st", "scene_light_no_st"],  "mode": "l1", "scale": 1.0, "config": {"tonemap": gamma_log, "skybox_mask_out": true}},
+        "rec_residual_loss": {"args": ["pred_scene_light_no_st", "scene_light_no_st"],  "mode": "l1", "scale": 1.0, "config": {"tonemap": gamma_log, "skybox_mask_out": false}},
         "sky_color_loss": {"args": ["pred_sky_color", "sky_color"], "mode": "charbonnier_l1", "config": {"tonemap": gamma_log, "skybox_mask": true}},
         "st_color_loss": {"args": ["pred_st_color", "st_color"], "mode": "charbonnier_l1", "scale": 1.0, "config": {"tonemap": gamma_log}},
         "st_alpha_loss": {"args": ["pred_st_alpha", "st_alpha"], "mode": "charbonnier_l1", "config": {}},
@@ -22,13 +22,13 @@ loss: {
     "debug_loss": {
         "psnr": {"args": ["pred", "scene_color"], "mode": "psnr", "config": {"tonemap": aces, "skybox_mask": false}},
         "ssim": {"args": ["pred", "scene_color"], "mode": "ssim", "config": {"tonemap": aces, "skybox_mask": false}},
-        "lpips": {"args": ["pred","scene_color", ], "mode": "lpips", "config": {"tonemap": aces, "skybox_mask": false}},
+        # "lpips": {"args": ["pred","scene_color", ], "mode": "lpips", "config": {"tonemap": aces, "skybox_mask": false}},
         "psnr_no_st": {"args": ["pred_scene_color_no_st", "scene_color_no_st"], "mode": "psnr", "config": {"tonemap": aces, "skybox_mask": false}},
         "ssim_no_st": {"args": ["pred_scene_color_no_st", "scene_color_no_st"], "mode": "ssim", "config": {"tonemap": aces, "skybox_mask": false}},
-        "lpips_no_st": {"args": ["pred_scene_color_no_st","scene_color_no_st", ], "mode": "lpips", "config": {"tonemap": aces, "skybox_mask": false}, 'enable': true},
+        # "lpips_no_st": {"args": ["pred_scene_color_no_st","scene_color_no_st", ], "mode": "lpips", "config": {"tonemap": aces, "skybox_mask": false}, 'enable': true},
         "psnr_st": {"args": ["pred_st_color", "st_color"], "mode": "psnr", "config": {"tonemap": aces, "skybox_mask": false}},
         "ssim_st": {"args": ["pred_st_color", "st_color"], "mode": "ssim", "config": {"tonemap": aces, "skybox_mask": false}},
-        "lpips_st": {"args": ["pred_st_color","st_color", ], "mode": "lpips", "config": {"tonemap": aces, "skybox_mask": false}, 'enable': true},
+        # "lpips_st": {"args": ["pred_st_color","st_color", ], "mode": "lpips", "config": {"tonemap": aces, "skybox_mask": false}, 'enable': true},
     },
     "test_loss":{
         "psnr": {"args": ["pred", "scene_color"], "mode": "psnr", "config": {"tonemap": aces, "skybox_mask": false}},

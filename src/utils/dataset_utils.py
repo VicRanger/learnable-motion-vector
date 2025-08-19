@@ -152,7 +152,7 @@ def create_history_frame(last_data, name, index=0):
 lut = read_buffer("asset/lut.exr")[:2, ...].unsqueeze(0)
 
 
-def create_brdf_color(roughness, nov, albedo, metallic, specular, skybox_mask=None, fix=False):
+def create_brdf_color(roughness, nov, albedo, metallic, specular, skybox_mask=None, sky_color=None, fix=False):
     global lut
     if lut.device != roughness.device:
         lut = lut.to(roughness.device)
@@ -184,7 +184,7 @@ def create_brdf_color(roughness, nov, albedo, metallic, specular, skybox_mask=No
     if skybox_mask is not None:
         brdf_color = torch.ones_like(brdf_color) * skybox_mask + brdf_color * (1 - skybox_mask)
     if fix:
-        brdf_color = fix_dmdl_color_zero_value(brdf_color)
+        brdf_color = fix_dmdl_color_zero_value(brdf_color, skybox_mask=skybox_mask, sky_color=sky_color)
     return brdf_color
 
 
@@ -222,16 +222,13 @@ def create_scene_color_no_sky(scene_color, sky_color, skybox_mask):
     scene_color_no_sky = torch.where(skybox_mask == 1, torch.zeros_like(scene_color_no_sky), scene_color_no_sky)
     return torch.clamp(scene_color_no_sky, min=0)
     
-def create_de_color(scene_color, dmdl_color, skybox_mask=None, sky_color=None, fix=False):
+def create_de_color(scene_color, dmdl_color, fix=False):
     for _ in [len(scene_color.shape) - 1, len(scene_color.shape) - 2]:
         assert scene_color.shape[_] == dmdl_color.shape[_]
     if fix:
-        tmp_dmdl_color = fix_dmdl_color_zero_value(dmdl_color, skybox_mask)
+        tmp_dmdl_color = fix_dmdl_color_zero_value(dmdl_color, None)
     else:
         tmp_dmdl_color = dmdl_color
-    if skybox_mask is not None:
-        assert sky_color is not None
-        scene_color = create_scene_color_no_sky(scene_color, sky_color, skybox_mask)
     scene_light = scene_color / tmp_dmdl_color
     sum_dim = len(tmp_dmdl_color.shape) - 3
     scene_light = torch.where(torch.sum(tmp_dmdl_color, dim=sum_dim, keepdim=True)

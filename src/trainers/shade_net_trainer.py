@@ -30,8 +30,8 @@ class ShadeNetTrainer(TrainerBase):
         self.loss_buffer = []
 
     def get_model_loss(self):
-        log.debug(dict_to_string(f'get model loss using "lpips"'))
-        return self.get_avg_info("lpips")
+        log.debug(dict_to_string(f'get model loss using "-psnr"'))
+        return self.get_avg_info("psnr") * -1.0
     
     def gather_tensorboard_image(self, mode='train'):
         diff_scale = 4

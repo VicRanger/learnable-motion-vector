@@ -17,7 +17,7 @@ from tqdm import tqdm
 def module_load_by_path(module, path):
     if not os.path.exists(path):
         raise FileNotFoundError(f'No file found in "{path}"')
-    net_data = torch.load(path)
+    net_data = torch.load(path, weights_only=False)
     log.debug(net_data.keys())
     if "state_dict" in net_data.keys():
         module.load_state_dict(net_data['state_dict'])

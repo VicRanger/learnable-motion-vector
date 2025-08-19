@@ -74,10 +74,13 @@ def demodulate_buffer_name(buffers):
     return buffers
 
 
-def fix_dmdl_color_zero_value(brdf_color, skybox_mask=None, sum_clamp=False):
+def fix_dmdl_color_zero_value(brdf_color, skybox_mask=None, sky_color=None, sum_clamp=False):
     ret = brdf_color
     if skybox_mask is not None:
-        ret = torch.ones_like(ret) * skybox_mask + ret * (1 - skybox_mask)
+        if sky_color is not None:
+            ret = sky_color * skybox_mask + ret * (1 - skybox_mask)
+        else:
+            ret = torch.ones_like(ret) * skybox_mask + ret * (1 - skybox_mask)
     return torch.clamp(ret, min=albedo_min_clamp)
 
 

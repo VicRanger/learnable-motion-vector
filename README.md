@@ -8,13 +8,16 @@ in SIGGRAPH Asia 2023 Conference Proceedings
 
 > **Abstract:** The utilization of dedicated ray tracing graphics cards has revolutionized the production of stunning visual effects in real-time rendering. However, the demand for high frame rates and high resolutions remains a challenge. The pixel warping approach is a crucial technique for increasing frame rate and resolution by exploiting the spatio-temporal coherence. To this end, existing superresolution and frame prediction methods rely heavily on motion vectors from rendering engine pipelines to track object movements. This work builds upon state-of-the-art heuristic approaches by exploring a novel adaptive recurrent frame prediction framework that integrates learnable motion vectors. Our framework supports the prediction of transparency, particles, and texture animations, with improved motion vectors that capture shading, reflections, and occlusions, in addition to geometry movements. In addition, we introduce a feature streaming neural network, dubbed FSNet, that allows for the adaptive prediction of one or multiple sequential frames. Extensive experiments against state-of-the-art methods demonstrate that FSNet can operate at lower latency with significant visual enhancements and can upscale frame rates by at least two times. This approach offers a flexible pipeline to improve the rendering frame rates of various graphics applications and devices.
 
-
+# Updates
+```
+[2025-08-19]: Updated the outdated resource links.
+```
 # Setup
 
 1. Make a directory for workspace and clone the repository: 
 ```
-mkdir fsnet-lmv; cd fsnet-lmv
-git clone https://github.com/VicRanger/FSNet-LMV code
+mkdir learnable-motion-vector; cd learnable-motion-vector
+git clone https://github.com/VicRanger/learnable-motion-vector code
 cd code
 ```
 2. Install conda env: `scripts/create_env.sh` in Linux or `scripts/create_env.bat` in Windows
@@ -40,17 +43,19 @@ Root_Directory/
 | |-- frame_100.EXR
 | |-- frame_101.EXR
 | |-- ...
-|-- MetallicRoughnessSpecular
-|-- NoVSTAlpha
+|-- MetallicRoughnessStencil
+|-- NoVSpecular
+|-- STAlpha
+|-- SceneColor
 |-- SceneColorNoST
-|-- SkyboxMask
 |-- SkyColor
+|-- SkyDepth 
 |-- VelocityDepth
-|-- WorldNormal 
+|-- WorldNormal
 ```
 ## Compress Raw Files into NPZ Files
 ### Setup configs
-Edit the `dataset_export_job.yaml` configuration file located at `config/includes/`.<br>
+Edit the `dataset_export_job_st.yaml` configuration file located at `config/includes/`. (`st` stands for `separate transluceny`)<br>
 Within this file, configure the following paths:
 - Set the `import_path` parameter to specify the directory containing the source EXR files exported from Unreal Engine.
 - Set the `export_path` parameter to define where the processed NPZ datasets to be saved.
@@ -114,20 +119,29 @@ Requirements: the .pt model file, (can be found in  `model` inside training resu
 - Place .pt file in `output/checkpoints/`
 - Set `pre_model: "../output/checkpoints/model.pt"` in the yaml.
 - Then run the script
-```
+```bash
 python src/test/test_inference.py
 ```
 
-# Resource
-## A dataset sample (16 frames) for inference
-[dataset sample (Onedrive) (211MB)](https://onedrive.live.com/?authkey=%21AD5zbeiyC%2DKmwlo&id=BDEFE6B920EF25D0%21109&cid=BDEFE6B920EF25D0)
-## Pretrained network weights 
-[checkpoints (Onedrive) (8MB)](https://onedrive.live.com/?authkey=%21AD5zbeiyC%2DKmwlo&id=BDEFE6B920EF25D0%21108&cid=BDEFE6B920EF25D0)
-## Result
-An example output for frame #0005 using the provided dataset and pretrained model:
-![result](asset/result.png)
-(These resources are specific to the FutureCity scene and can be used for evaluating the pretrained model.) <br>
+# Running the Demo
+## Step 1: download the resources
+```
+./scripts/download_pretrained_model_demo.sh
+./scripts/download_dataset_demo.sh
+```
+(alternative) or download with the following links
+1. download [pretraineed model (Hugging Face) (8.4MB)](https://huggingface.co/VicRanger/learnable-motion-vector-v5d4-pretrained-FC-demo/resolve/main/lmv_v5d4_FC_demo.pt?download=true) and place it in `../checkpoints`
+2. download [dataset sample (Hugging Face) (378MB)](https://huggingface.co/datasets/VicRanger/learnable-motion-vector-dataset-demo/resolve/main/FC.zip?download=true) and unzip it to `../dataset/`
 
+## Step 2: run the demo
+by `test_trainer.py` with `test_only` mode 
+```
+python src/test/test_train.py --config config/lmv_v5d4_inference.yaml --test --test_only
+```
+or by default `test_inference.py`
+```
+python src/test/test_inference.py
+```
 # Citation
 
 Thank you for being interested in our paper.  <br>

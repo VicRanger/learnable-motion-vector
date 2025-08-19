@@ -124,17 +124,18 @@ def inference():
                     
                     log.debug(float(LossFunction.single_ops["psnr"]([pred, gt]).mean().item()))
                     error = torch.abs(pred - gt)
-                    write_buffer(tnr.config['write_path']+f"dmdl_color/dmdl_color{str(index).zfill(4)}.exr", tnr.cur_data['dmdl_color'][0], mkdir=True)
+                    write_buffer(tnr.config['write_path']+f"dmdl_color/dmdl_color_{str(index).zfill(4)}.exr", tnr.cur_data['dmdl_color'][0], mkdir=True)
+                    write_buffer(tnr.config['write_path']+f"scene_light_no_st/scene_light_no_st_{str(index).zfill(4)}.exr", tnr.cur_data['scene_light_no_st'][0], mkdir=True)
                     write_buffer(tnr.config['write_path']+f"pred_scene_light_no_st/pred_scene_light_no_st_{str(index).zfill(4)}.exr", tnr.cur_output['pred_scene_light_no_st'][0], mkdir=True)
                     write_buffer(tnr.config['write_path']+f"pred/pred_{str(index).zfill(4)}.exr", pred, mkdir=True)
                     write_buffer(tnr.config['write_path']+f"error/error_{str(index).zfill(4)}.exr", error, mkdir=True)
                     write_buffer(tnr.config['write_path']+f"gt/gt_{str(index).zfill(4)}.exr", gt, mkdir=True)
-                    # write_buffer(tnr.config['write_path']+f"gt/gt_{str(index).zfill(4)}.png", gamma(gt), mkdir=True)
 
                     if 'pred_tmv' in tnr.cur_output.keys():
                         mv = tnr.cur_output['pred_tmv'][0]
                     elif 'pred_layer_0_st_tmv_0' in tnr.cur_output.keys():
                         mv = tnr.cur_output['pred_layer_0_st_tmv_0'][0]
+                    ''' enhance the color contrast for better visualization of motion vector '''
                     mv = torch.nn.functional.sigmoid((torch.abs(mv) ** 0.5)*32*torch.sign(mv))
                     mv = mv_to_image(mv-0.5).float()/255.0
                     write_buffer(tnr.config['write_path']+f"mv_st/mv_st_{str(index).zfill(4)}.exr",
@@ -156,24 +157,26 @@ if __name__ == '__main__':
     num_he = 3
 
     metric = ['psnr', 'ssim', 'lpips']
-    dataset_cfg = parse_config("config/shadenet_v5d4_inference.yaml")
+    dataset_cfg = parse_config("config/lmv_v5d4_inference.yaml")
     config_path = [
-        "config/shadenet_v5d4_inference.yaml"
+        "config/lmv_v5d4_inference.yaml"
     ]
 
     inference_name = "FC_TEST"
     dataset_cfg['dataset']['train_scene'] = [
-        {"name":"FC_T/FC_TEST_720", "config":{"indice":[]}},
+        {"name":"FC/FC_TEST", "config":{"indice":[]}},
+        # {"name":"FC_T/FC_TEST_720", "config":{"indice":[]}},
     ]
     dataset_cfg['dataset']['test_scene'] = [
-        {"name":"FC_T/FC_TEST_720", "config":{"indice":[]}},
+        {"name":"FC/FC_TEST", "config":{"indice":[]}},
+        # {"name":"FC_T/FC_TEST_720", "config":{"indice":[]}},
     ]
     update_inference_config(dataset_cfg)
     enhance_train_config(dataset_cfg)
     inference_name = inference_name
     dataset_trainer = eval(dataset_cfg['trainer']['class'])(
             dataset_cfg, None, resume=False)
-    dataset_trainer.prepare('test')
+    dataset_trainer.prepare('test', with_output_dir=False)
     from torch.utils.tensorboard import SummaryWriter
     write_path = "../output/images/inference/"
 
@@ -196,7 +199,7 @@ if __name__ == '__main__':
         resume = False
         tmp_trainer = eval(config_train['trainer']['class'])(
             config_train, tmp_model, resume=resume)
-        tmp_trainer.prepare("test")
+        tmp_trainer.prepare("test", with_output_dir=False)
         tmp_trainer.config['vars'] = {}
         for item in metric:
             tmp_trainer.config['vars'][f"{item}_acc"] = Accumulator()
@@ -208,6 +211,7 @@ if __name__ == '__main__':
 
         create_dir(tmp_trainer.config['write_path'])
         remove_all_in_dir(tmp_trainer.config['write_path'])
+        log.debug(tmp_trainer.config['write_path'] + ": created.")
         trainers.append(tmp_trainer)
 
     require_list = get_input_filter_list({

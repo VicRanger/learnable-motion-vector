@@ -164,7 +164,7 @@ def get_augmented_buffer(augmented_output, buffer_config, data, last_data=[], al
             augmented_data = create_brdf_color(data[pref + 'roughness' + postf], data[pref + 'nov' + postf],
                                                data[pref + 'base_color' + postf], data[pref +
                                                                                        'metallic' + postf], data[pref + 'specular' + postf],
-                                               skybox_mask=data[pref + 'skybox_mask' + postf])
+                                               skybox_mask=data[pref + 'skybox_mask' + postf], sky_color=data[pref + 'sky_color' + postf], fix=True)
         elif buffer_name == 'dmdl_color':
             if demodulation_mode == 'base':
                 augmented_data = fix_dmdl_color_zero_value(data[pref + 'base_color'])
@@ -178,7 +178,7 @@ def get_augmented_buffer(augmented_output, buffer_config, data, last_data=[], al
                                                        data[pref + 'base_color' + postf],
                                                        data[pref + 'metallic' + postf],
                                                        data[pref + 'specular' + postf],
-                                                       skybox_mask=data[pref + 'skybox_mask' + postf])
+                                                       skybox_mask=data[pref + 'skybox_mask' + postf], sky_color=data[pref + 'sky_color' + postf], fix=True)
             else:
                 raise Exception(
                     f'dmdl_color only supports "base", "brdf", but buffer_config.demodulation_mode="{demodulation_mode}"')
@@ -186,12 +186,14 @@ def get_augmented_buffer(augmented_output, buffer_config, data, last_data=[], al
 
         elif buffer_name == 'scene_light_no_st':
             sc = data[pref + buffer_name.replace('scene_light', 'scene_color') + postf]
-            augmented_data = create_de_color(sc, data[pref + 'dmdl_color' + postf],
-                                             skybox_mask=data[pref + 'skybox_mask' + postf], sky_color=data[pref + 'sky_color' + postf], fix=True)
+            augmented_data = create_de_color(sc, data[pref + 'dmdl_color' + postf], fix=True)
+            # augmented_data = create_de_color(sc, data[pref + 'dmdl_color' + postf],
+            #                                  skybox_mask=data[pref + 'skybox_mask' + postf], sky_color=data[pref + 'sky_color' + postf], fix=True)
         elif buffer_name == 'scene_light':
             sc = data[pref + buffer_name.replace('scene_light', 'scene_color') + postf]
-            augmented_data = create_de_color(sc, data[pref + 'dmdl_color' + postf],
-                                             skybox_mask=data[pref + 'skybox_mask' + postf], sky_color=data[pref + 'sky_color' + postf], fix=True)
+            augmented_data = create_de_color(sc, data[pref + 'dmdl_color' + postf], fix=True)
+            # augmented_data = create_de_color(sc, data[pref + 'dmdl_color' + postf],
+            #                                  skybox_mask=data[pref + 'skybox_mask' + postf], sky_color=data[pref + 'sky_color' + postf], fix=True)
 
         elif buffer_name == 'skybox_mask':
             sky_depth = data.get(pref + 'sky_depth' + postf, None)

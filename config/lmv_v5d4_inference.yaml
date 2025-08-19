@@ -1,0 +1,55 @@
+job_name: "train/lmv_v5d4_FC"
+config_root_path: "config/"
+base: "pipeline/lmv_v5d4.yaml"
+pipeline: [
+    "pipeline/lmv_v5d4_smv0_w12.yaml",
+    "trainers/lmv_trainer_v5.yaml",
+]
+initial_inference: false
+# trainer:
+#     debug_data_flow: false
+# pre_model: "../checkpoints/previous_checkpoint.pt"
+include: []
+train_parameter: {
+    "epoch": 150,
+    "batch_size": 6,
+    "lr_config": {
+        "mode": cos,
+        "decay_at": 0,
+        "value": !!float 2e-4,
+        "low": !!float 2e-5,
+    }
+}
+debug: False
+num_gpu: 2
+cuda_visible_devices: '0\,1'
+output_root_path: "../output/train_output/"
+# clear_output_path: True
+buffer_config:
+    mu: !!float 8.0
+dataset: 
+    path: "../dataset/"
+    scale_config: {}
+    shuffle_metadata: true
+    shuffle_loader: false
+    augment_loader: false
+    train_num_worker_sum: 8
+    block_size: 8
+    part_size: 8
+    train_scale: !!float 1.0
+    train_scene: [
+      {"name":"FC/FC_01", "config":{"indice":[]}},
+      {"name":"FC/FC_02", "config":{"indice":[]}},
+      {"name":"FC/FC_03", "config":{"indice":[]}},
+      {"name":"FC/FC_04", "config":{"indice":[]}},
+    ]
+    test_scene: [
+      {"name":"FC/FC_05", "config":{"indice":[]}},
+    ]
+model: {
+    "model_name": "lmv_v5d4_FC",
+    "target_pr": 0,
+    loss: [
+        "zero_flow",
+    ],
+}
