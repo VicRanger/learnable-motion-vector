@@ -4,12 +4,13 @@ This is offical repository for our paper, **Adaptive Recurrent Frame Prediction 
 **Authors:** Zhizhen Wu, Chenyu Zuo, Yuchi Huo, Yazhen Yuan, Yinfan Peng, Guiyang Pu, Rui Wang and Hujun Bao.<br>
 in SIGGRAPH Asia 2023 Conference Proceedings
 
-![pic](asset/pic.png)
+<p align="center"><img src=".md_asset/banner.png" width="800px"></p>
 
 > **Summary:** We propose **learnable motion vectors**, a novel approach that leverages both **optical flow** and traditionally **rendered motion vectors** to facilitate accurate motion estimation for challenging elements such as **occlusion, dynamic shading, and translucent objects**. Building on this concept, our new **feature streaming neural network**, FSNet, is designed to **achieve adaptive recurrent frame prediction** with lower latency and superior quality.
 
 # Updates
 ```
+[2025-10-13]: Updated the post processing materials.
 [2025-08-19]: Updated the outdated resource links.
 ```
 # Setup
@@ -26,9 +27,14 @@ cd code
 
 ## Export Buffers from UE4
 
-Corresbonding cpp code can be found in `scripts/ue4_source_code/`. <br>
-1. Copy the .h and .cpp files into the source directory of the UE4 project, and then recompile the project. <br>
-2. Upon succesful compilation, there will be a new C++ Class in the `Content Browser`. This class functions as a placable Actor. To begin using the capture functionality, place the `CaptureManager` into scene, configure it and then you are ready to begin exporting the render buffer.
+The corresponding C++ code is located in `scripts/ue4_source_code/`. <br>
+1. Copy the `.h` and `.cpp` files into your UE4 project's source directory and recompile the project. <br>
+2. After successful compilation, a new C++ Class, `CaptureManager`, will appear in the `Content Browser`. Place this Actor into your scene, configure it, and you will be ready to export the render buffer.
+3. Utilize the post-processing materials provided in `scripts/ue4_source_code/PPMaterials` to export specific render buffers.
+4. A `BufferOptions.CaptureItem.txt` file is provided for convenience. Copy and paste its contents into the `CaptureManager`'s `Capture Item` field to apply all necessary settings for render buffer export. <br>
+
+<p align="center"><img src=".md_asset/capture-items.png" width="400px"></p>
+
 
 ## Exported File Structure from UE4
 ```
@@ -52,6 +58,7 @@ Root_Directory/
 |-- SkyDepth 
 |-- VelocityDepth
 |-- WorldNormal
+|-- WorldPosition
 ```
 ## Compress Raw Files into NPZ Files
 ### Setup configs
