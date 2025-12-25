@@ -8,8 +8,8 @@ pipeline: [
 initial_inference: false
 # trainer:
 #     debug_data_flow: false
-pre_model: "../checkpoints/lmv_v5d4_FC_demo.pt"
 include: []
+# pre_model: "../checkpoints/previous_checkpoint.pt"
 train_parameter: {
     "epoch": 150,
     "batch_size": 6,
